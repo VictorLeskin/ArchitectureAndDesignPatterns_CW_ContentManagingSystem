@@ -1,0 +1,1 @@
+python makeOUTSClass.py  ArchitectureAndDesignPatterns_CW_ContentManagingSystem

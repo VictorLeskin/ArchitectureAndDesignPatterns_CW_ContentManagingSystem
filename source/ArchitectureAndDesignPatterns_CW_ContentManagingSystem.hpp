@@ -1,0 +1,10 @@
+///************************* OUTS HOMEWORK ****************************************
+#ifndef ARCHITECTUREANDDESIGNPATTERNS_CW_CONTENTMANAGINGSYSTEM_HPP
+#define ARCHITECTUREANDDESIGNPATTERNS_CW_CONTENTMANAGINGSYSTEM_HPP
+
+class ArchitectureAndDesignPatterns_CW_ContentManagingSystem
+{
+public:
+};
+
+#endif //#ifndef ARCHITECTUREANDDESIGNPATTERNS_CW_CONTENTMANAGINGSYSTEM_HPP
