@@ -1,0 +1,212 @@
+openapi: 3.0.0
+info:
+  title: CMS with RBAC API
+  version: 1.0.0
+  description: API for Content Management System with Role-Based Access Control
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+
+paths:
+  /auth/login:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+  
+  /pages:
+    get:
+      summary: Get all pages
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of pages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Page'
+    
+    post:
+      summary: Create a new page
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCreateRequest'
+      responses:
+        '201':
+          description: Page created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+
+  /pages/{id}:
+    get:
+      summary: Get page by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Page details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+    
+    put:
+      summary: Update page
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageUpdateRequest'
+      responses:
+        '200':
+          description: Page updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+    
+    delete:
+      summary: Delete page
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Page deleted
+
+  /components:
+    get:
+      summary: Get available components
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of components
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ComponentInfo'
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        role:
+          type: string
+          enum: [reader, editor, admin]
+    
+    Page:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/Component'
+    
+    PageCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/Component'
+      required:
+        - title
+    
+    PageUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/Component'
+    
+    Component:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+    
+    ComponentInfo:
+      type: object
+      properties:
+        type:
+          type: string
+        description:
+          type: string
+        parametersSchema:
+          type: object
+    
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

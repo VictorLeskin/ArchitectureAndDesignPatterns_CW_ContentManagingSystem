@@ -1,0 +1,35 @@
+classDiagram
+    class AuthService {
+        +login(username, password) AuthResponse
+        +validateToken(token) bool
+        +getUserRole(token) string
+    }
+    
+    class PageController {
+        +getPages() Page[]
+        +createPage(pageData) Page
+        +updatePage(id, pageData) Page
+        +deletePage(id) void
+    }
+    
+    class ComponentRegistry {
+        +registerComponent(component) void
+        +getComponentTypes() ComponentInfo[]
+        +createComponent(type, params) Component
+    }
+    
+    class Database {
+        +getUsers() User[]
+        +getPages() Page[]
+        +savePage(page) void
+    }
+    
+    class PluginLoader {
+        +loadPlugins(path) void
+    }
+    
+    AuthService --> Database : uses
+    PageController --> AuthService : checks auth
+    PageController --> Database : stores pages
+    PageController --> ComponentRegistry : creates components
+    ComponentRegistry --> PluginLoader : loads plugins

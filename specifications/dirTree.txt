@@ -1,0 +1,26 @@
+ArchitectureAndDesignPatterns_CW_ContentManagingSystem/
++-- include/
+¦   +-- auth/
+¦   ¦   +-- AuthService.h
+¦   ¦   L-- JWT.h
+¦   +-- core/
+¦   ¦   +-- Component.h
+¦   ¦   +-- Page.h
+¦   ¦   +-- PluginLoader.h
+¦   ¦   L-- Middleware.h
+¦   +-- database/
+¦   ¦   +-- Database.h
+¦   ¦   L-- JsonStorage.h
+¦   L-- server/
+¦       +-- Router.h
+¦       L-- Server.h
++-- src/
+¦   +-- tests/
+¦   +-- auth/
+¦   +-- core/
+¦   +-- database/
+¦   L-- server/
++-- plugins/
+¦   +-- TextComponent/
+¦   +-- HeaderComponent/
+¦   L-- ImageComponent/

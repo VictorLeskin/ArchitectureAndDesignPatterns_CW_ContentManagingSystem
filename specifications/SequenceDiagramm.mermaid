@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant Client
+    participant AuthService
+    participant PageController
+    participant ComponentRegistry
+    participant Database
+    
+    Client->>AuthService: POST /auth/login {username, password}
+    AuthService->>Database: Validate user
+    AuthService-->>Client: Return JWT token
+    
+    Client->>PageController: GET /pages/{id} (with JWT)
+    PageController->>AuthService: Validate token
+    AuthService-->>PageController: Return role
+    
+    PageController->>Database: Get page data
+    Database-->>PageController: Return page
+    
+    loop For each component
+        PageController->>ComponentRegistry: Create component
+        ComponentRegistry-->>PageController: Return rendered component
+    end
+    
+    PageController-->>Client: Return page with components
