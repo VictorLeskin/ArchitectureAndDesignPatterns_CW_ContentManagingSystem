@@ -40,7 +40,6 @@ int test_cFactory::Test_cFactory::resGetInt = 1;
 int test_cFactory::Test_cFactory::resGetInt2 = 2;
 
 
-#if 0
 
 
 // gTest grouping class
@@ -82,7 +81,6 @@ public:
     using cIoCImpl::ssResolve;
   };
 };
-#endif 
 
 #if 0
 // gTest grouping class
@@ -179,7 +177,6 @@ TEST_F(test_cFactory, test_getFactoryMethod)
 
 }
 
-#if 0
 
 TEST_F(test_cIoCImpl, test_doRegisterFactory)
 {
@@ -194,22 +191,9 @@ TEST_F(test_cIoCImpl, test_doRegisterFactory)
   EXPECT_EQ(0, t.factories.size());
   res->Execute();
   EXPECT_EQ(1, t.factories.size());
-  auto fptr = t.factories["A"].getFactoryMethod<int, int, double>("int");
+  auto fptr = t.factories["A"].getFactoryMethod<int, std::tuple<int, double>>("int");
   EXPECT_EQ(&test_cFactory::Test_cFactory::GetInt, fptr);
-
-  // wrong type for registrations
-  try
-  {
-    t.doRegisterFactory("A", 22)->Execute();
-    FAIL();
-  }
-  catch (const std::exception& expected)
-  {
-    ASSERT_STREQ("Wrong registration type.", expected.what());
-  }
-
 }
-
 
 TEST_F(test_cIoCImpl, test_doRegisterFactoryMethod)
 {
@@ -226,7 +210,7 @@ TEST_F(test_cIoCImpl, test_doRegisterFactoryMethod)
   res->Execute();
   EXPECT_EQ(2, t.factories["A"].size());
 
-  auto fptr = t.factories["A"].getFactoryMethod<test_cFactory::Test_cFactory>("Test_cFactory");
+  auto fptr = t.factories["A"].getFactoryMethod<test_cFactory::Test_cFactory, test_cFactory::Test_cFactory>("Test_cFactory");
   EXPECT_EQ((void*)&test_cFactory::Test_cFactory::Clone, (void*)fptr);
 
   // no such factory method
@@ -241,6 +225,9 @@ TEST_F(test_cIoCImpl, test_doRegisterFactoryMethod)
     ASSERT_STREQ("There isn't such factory.", expected.what());
   }
 }
+
+
+#if 0
 
 
 TEST_F(test_cIoCImpl, test_getMethod)

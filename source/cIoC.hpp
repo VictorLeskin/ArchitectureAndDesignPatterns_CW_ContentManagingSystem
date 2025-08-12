@@ -25,7 +25,8 @@ class cFactory;
 
 struct iRegisterFactory : public iCommand
 {
-  iRegisterFactory(cIoCImpl& ioc, const std::string& scope, const cFactory& f);
+  iRegisterFactory(cIoCImpl& ioc, const std::string& scope, const cFactory& f) :
+    ioc(&ioc), scope(scope), f(&f) {};
 
   void Execute() override;
 
@@ -33,7 +34,7 @@ struct iRegisterFactory : public iCommand
 
   cIoCImpl* ioc;
   const std::string scope;
-  std::shared_ptr<cFactory> f;
+  const cFactory *f;
 };
 
 struct iRegisterFactoryMethod : public iCommand
@@ -97,7 +98,6 @@ protected:
   std::map<std::string, const void*> factoryMethods;
 };
 
-#if   0
 // cIoCImpl is a container class for a factory pattern.  
 // The Resolve function with first parameter "Register" registers a factory or a factory method  
 // within a scope and returns a pointer to an instance of iCommand. The command must be executed  
@@ -147,11 +147,9 @@ protected:
     return new iRegisterFactoryMethod(*this, scope, objName, (const void*)f);
   }
 
-  template<typename F>
-  iCommand* doRegisterFactory(const std::string& scope, const F& f)
+  iCommand* doRegisterFactory(const std::string& scope, const cFactory& f)
   {
-    throw cException("Wrong registration type.");
-    return nullptr;
+    return new iRegisterFactory(*this, scope, f);
   }
 
 
@@ -199,20 +197,25 @@ public:
   ~cIoC() = default;
 
   template< typename T, typename S1, typename S2, typename Args>
-  T* Resolve(S1 s1, S2 s2, const Args &args)
+  std::shared_ptr<T> Resolve(S1 s1, S2 s2, const Args &args)
   {
     return ssResolve<T>(std::string(s1), std::string(s2), args );
   }
+
+  template< typename R, typename Args>
+  std::shared_ptr<iCommand> Register(const std::string& scope, const std::string& objName, R* (*f)(const Args& args))
+  {
+    return cIoCImpl::doRegisterFactoryMethod(scope,objName,f);
+  }
+
+  std::shared_ptr<iCommand> Register(const std::string& scope, const cFactory& f)
+  {
+    iCommand *ptr = cIoCImpl::doRegisterFactory(scope, f);
+    return std::shared_ptr<iCommand>(ptr);
+  }
+
 };
 
-template<>
-inline iCommand* cIoCImpl::doRegisterFactory(const std::string& scope, const cFactory& f)
-{
-  return new iRegisterFactory(*this, scope, f);
-}
-
-
-inline iRegisterFactory::iRegisterFactory(cIoCImpl& ioc, const std::string& scope, const cFactory& f) : ioc(&ioc), scope(scope), f(new cFactory(f)) {}
 
 inline void iRegisterFactory::Execute()
 {
@@ -227,6 +230,4 @@ inline void iRegisterFactoryMethod::Execute()
   auto& m = ioc->factories[scope];
   m.doRegister(objName, f);
 }
-#endif 
-
 #endif //#ifndef CIOC_HPP
