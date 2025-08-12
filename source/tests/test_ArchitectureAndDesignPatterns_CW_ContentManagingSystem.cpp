@@ -21,5 +21,7 @@ public:
 TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_ctor )
 {
   Test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem t;
+
+
 }
 
