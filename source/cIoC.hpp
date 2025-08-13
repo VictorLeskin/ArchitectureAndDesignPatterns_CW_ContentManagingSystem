@@ -11,8 +11,8 @@
 #include "cException.hpp"
 
 // cIoCImpl-container
-// with only resolve entry
-// T *Resolve(std::string s, const Args &args);
+// with only entry
+// T *Resolve(std::string s, Args... args);
 // if s is "Register" this means query to register factory or factory method
 // Registering a factory is performing by the function 
 // iCommand *registerFactory(std::string scope, const cFactory &);
@@ -25,31 +25,30 @@ class cFactory;
 
 struct iRegisterFactory : public iCommand
 {
-  iRegisterFactory(cIoCImpl& ioc, const std::string& scope, const cFactory& f) :
-    ioc(&ioc), scope(scope), f(&f) {};
+    iRegisterFactory(cIoCImpl& ioc, const std::string& scope, const cFactory& f);
 
-  void Execute() override;
+    void Execute() override;
 
-  const char* Type()  override { return typeid(*this).name(); }
+    const char* Type()  override { return typeid(*this).name(); }
 
-  cIoCImpl* ioc;
-  const std::string scope;
-  const cFactory *f;
+    cIoCImpl* ioc;
+    const std::string scope;
+    std::shared_ptr<cFactory> f;
 };
 
 struct iRegisterFactoryMethod : public iCommand
 {
-  iRegisterFactoryMethod(cIoCImpl& ioc, const std::string& scope, const std::string& objName, const void* f)
-    : ioc(&ioc), scope(scope), objName(objName), f(f) {
-  }
+    iRegisterFactoryMethod(cIoCImpl& ioc, const std::string& scope, const std::string& objName, const void* f)
+        : ioc(&ioc), scope(scope), objName(objName), f(f) {
+    }
 
-  void Execute() override;
+    void Execute() override;
 
-  const char* Type()  override { return typeid(*this).name(); }
+    const char* Type()  override { return typeid(*this).name(); }
 
-  cIoCImpl* ioc;
-  const std::string scope, objName;
-  const void* f;
+    cIoCImpl* ioc;
+    const std::string scope, objName;
+    const void* f;
 };
 
 
@@ -57,45 +56,45 @@ struct iRegisterFactoryMethod : public iCommand
 // keep factory methond in a map<string,function pointer>
 class cFactory
 {
-  friend struct iRegisterFactoryMethod;
+    friend struct iRegisterFactoryMethod;
 
 public:
-  template< typename T, typename Args>
-  using funcPointer = T * (*)(const Args &args);
+    template< typename T, typename... Args>
+    using funcPointer = T * (*)(Args... args);
 
-  // register a factory method
-  template< typename T, typename Args>
-  void Register(const std::string& objName, T* (*f)(const Args& args))
-  {
-    doRegister(objName, (const void*)f);
-  }
-
-  // get a factory method
-  // throw cException if there is not a requested factory method
-  template< typename T, typename Args>
-  funcPointer<T, const Args &> getFactoryMethod(const std::string& objName) const
-  {
-    try
+    // register a factory method
+    template< typename T, typename... Args>
+    void Register(const std::string& objName, T* (*f)(Args... args))
     {
-      return funcPointer<T, Args>(factoryMethods.at(objName));
+        doRegister(objName, (const void*)f);
     }
-    catch (const std::out_of_range&) // Ups.... 
-    {
-      throw cException("There isn't such factory method.");
-    }
-  }
 
-  int size() const { return int(factoryMethods.size()); }
+    // get a factory method
+    // throw cException if there is not a requested factory method
+    template< typename T, typename... Args>
+    funcPointer<T, Args...> getFactoryMethod(const std::string& objName) const
+    {
+        try
+        {
+            return funcPointer<T, Args...>(factoryMethods.at(objName));
+        }
+        catch (const std::out_of_range&) // Ups.... 
+        {
+            throw cException("There isn't such factory method.");
+        }
+    }
+
+    int size() const { return int(factoryMethods.size()); }
 
 protected:
-  // keeps the pointer as old plain pointers.
-  void doRegister(const std::string& objName, const void* f)
-  {
-    factoryMethods[objName] = f;
-  }
+    // keeps the pointer as old plain pointers.
+    void doRegister(const std::string& objName, const void* f)
+    {
+        factoryMethods[objName] = f;
+    }
 
 protected:
-  std::map<std::string, const void*> factoryMethods;
+    std::map<std::string, const void*> factoryMethods;
 };
 
 // cIoCImpl is a container class for a factory pattern.  
@@ -116,118 +115,117 @@ protected:
 
 class cIoCImpl
 {
-  // class 
+    // class 
 protected:
 
-  friend struct iRegisterFactory;
-  friend struct iRegisterFactoryMethod;
+    friend struct iRegisterFactory;
+    friend struct iRegisterFactoryMethod;
 
 private:
-  cIoCImpl(const cIoCImpl&) = delete;
-  cIoCImpl& operator=(const cIoCImpl&) = delete;
+    cIoCImpl(const cIoCImpl&) = delete;
+    cIoCImpl& operator=(const cIoCImpl&) = delete;
 
 protected:
-  cIoCImpl() = default;
-  ~cIoCImpl() = default;
+    cIoCImpl() = default;
+    ~cIoCImpl() = default;
 
 protected:
-  template< typename T, typename Args>
-  void* getMethod(const std::string& scope, const std::string& objName)
-  {
-    // find scope factory
-    auto factoryIt = factories.find(scope);
-    if (factoryIt == factories.end())
-      throw cException("There isn't such factory.");
-    return reinterpret_cast<void*>(factoryIt->second.getFactoryMethod<T, Args>(objName));
-  }
-
-  template< typename R, typename Args>
-  iCommand* doRegisterFactoryMethod(const std::string& scope, const std::string& objName, R* (*f)(const Args &args))
-  {
-    return new iRegisterFactoryMethod(*this, scope, objName, (const void*)f);
-  }
-
-  iCommand* doRegisterFactory(const std::string& scope, const cFactory& f)
-  {
-    return new iRegisterFactory(*this, scope, f);
-  }
-
-
-  template< typename T, typename Args>
-  T* doResolve(const std::string s1, const std::string s2, const Args &args)
-  {
-    auto method = getMethod<T, Args>(s1, s2);
-    using f = T * (*)(const Args &);
-    return (*f(method))(args...);
-  }
-
-  template< typename T, typename Args>
-  T* ssResolve(const std::string s1, const std::string s2, const Args &args)
-  {
-    if (s1 == "Register")
+    template< typename T, typename... Args>
+    void* getMethod(const std::string& scope, const std::string& objName)
     {
-      if constexpr (sizeof...(Args) == 1)
-      {
-        const auto& f = std::get<0>(std::forward_as_tuple(args...));
-        //const std::string s = typeid(f).name();
-        return (T*)doRegisterFactory(s2, f);
-      }
-
-      if constexpr (sizeof...(Args) == 2)
-      {
-        auto objName = std::get<0>(std::forward_as_tuple(args...));
-        auto fm = std::get<1>(std::forward_as_tuple(args...));
-        return doRegisterFactoryMethod(s2, objName, fm);
-      }
-
-      throw(cException("Wrong registering type in resolving."));
+        // find scope factory
+        auto factoryIt = factories.find(scope);
+        if (factoryIt == factories.end())
+            throw cException("There isn't such factory.");
+        return reinterpret_cast<void*>(factoryIt->second.getFactoryMethod<T, Args...>(objName));
     }
 
-    return doResolve<T, Args...>(s1, s2, std::forward<const Args>(args)...);
-  }
+    template< typename R, typename... Args>
+    iCommand* doRegisterFactoryMethod(const std::string& scope, const std::string& objName, R* (*f)(Args... args))
+    {
+        return new iRegisterFactoryMethod(*this, scope, objName, (const void*)f);
+    }
+
+    template<typename F>
+    iCommand* doRegisterFactory(const std::string& scope, const F& f)
+    {
+        throw cException("Wrong registration type.");
+        return nullptr;
+    }
+
+
+    template< typename T, typename... Args>
+    T* doResolve(const std::string s1, const std::string s2, Args... args)
+    {
+        auto method = getMethod<T, Args... >(s1, s2);
+        using f = T * (*)(Args...);
+        return (*f(method))(args...);
+    }
+
+    template< typename T, typename... Args>
+    T* ssResolve(const std::string s1, const std::string s2, const Args... args)
+    {
+        if (s1 == "Register")
+        {
+            if constexpr (sizeof...(Args) == 1)
+            {
+                const auto& f = std::get<0>(std::forward_as_tuple(args...));
+                //const std::string s = typeid(f).name();
+                return (T*)doRegisterFactory(s2, f);
+            }
+
+            if constexpr (sizeof...(Args) == 2)
+            {
+                auto objName = std::get<0>(std::forward_as_tuple(args...));
+                auto fm = std::get<1>(std::forward_as_tuple(args...));
+                return doRegisterFactoryMethod(s2, objName, fm);
+            }
+
+            throw(cException("Wrong registering type in resolving."));
+        }
+
+        return doResolve<T, Args...>(s1, s2, std::forward<const Args>(args)...);
+    }
 
 protected:
-  std::map<std::string, cFactory> factories;
+    std::map<std::string, cFactory> factories;
 };
 
 class cIoC : public cIoCImpl
 {
 public:
-  cIoC() = default;
-  ~cIoC() = default;
+    cIoC() = default;
+    ~cIoC() = default;
 
-  template< typename T, typename S1, typename S2, typename Args>
-  std::shared_ptr<T> Resolve(S1 s1, S2 s2, const Args &args)
-  {
-    return ssResolve<T>(std::string(s1), std::string(s2), args );
-  }
-
-  template< typename R, typename Args>
-  std::shared_ptr<iCommand> Register(const std::string& scope, const std::string& objName, R* (*f)(const Args& args))
-  {
-    return cIoCImpl::doRegisterFactoryMethod(scope,objName,f);
-  }
-
-  std::shared_ptr<iCommand> Register(const std::string& scope, const cFactory& f)
-  {
-    iCommand *ptr = cIoCImpl::doRegisterFactory(scope, f);
-    return std::shared_ptr<iCommand>(ptr);
-  }
+    template< typename T, typename S1, typename S2, typename... Args>
+    T* Resolve(S1 s1, S2 s2, Args... args)
+    {
+        return ssResolve<T>(std::string(s1), std::string(s2), std::forward<Args>(args)...);
+    }
 
 };
 
+template<>
+inline iCommand* cIoCImpl::doRegisterFactory(const std::string& scope, const cFactory& f)
+{
+    return new iRegisterFactory(*this, scope, f);
+}
+
+
+inline iRegisterFactory::iRegisterFactory(cIoCImpl& ioc, const std::string& scope, const cFactory& f) : ioc(&ioc), scope(scope), f(new cFactory(f)) {}
 
 inline void iRegisterFactory::Execute()
 {
-  ioc->factories[scope] = *f;
+    ioc->factories[scope] = *f;
 }
 
 inline void iRegisterFactoryMethod::Execute()
 {
-  if (ioc->factories.find(scope) == ioc->factories.end())
-    throw cException("There isn't such factory.");
+    if (ioc->factories.find(scope) == ioc->factories.end())
+        throw cException("There isn't such factory.");
 
-  auto& m = ioc->factories[scope];
-  m.doRegister(objName, f);
+    auto& m = ioc->factories[scope];
+    m.doRegister(objName, f);
 }
+
 #endif //#ifndef CIOC_HPP

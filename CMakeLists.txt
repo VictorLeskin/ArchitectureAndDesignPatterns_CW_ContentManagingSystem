@@ -22,9 +22,18 @@ add_executable(
 
   source/ArchitectureAndDesignPatterns_CW_ContentManagingSystem.hpp
   source/ArchitectureAndDesignPatterns_CW_ContentManagingSystem.cpp
+  source/cException.hpp
+  source/cException.cpp
+  source/iCommand.hpp
+  source/iCommand.cpp
+  source/cIoC.hpp
+  source/cIoC.cpp
 #add source file here
 
   source/tests/test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem.cpp
+  source/tests/test_cException.cpp
+  source/tests/test_iCommand.cpp
+  source/tests/test_cIoC.cpp
 #add test file here
 )
 
