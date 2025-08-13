@@ -1,1 +1,1 @@
-python makeOUTSClass.py cAuthServer
+python makeOUTSClass.py cPageId

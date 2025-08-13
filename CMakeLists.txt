@@ -5,6 +5,38 @@ project(ArchitectureAndDesignPatterns_CW_ContentManagingSystem)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Подключаем необходимые зависимости
+# Указываем путь к OpenSSL
+set(OPENSSL_ROOT_DIR "D:/work/OpenSSL-Win64")
+set(OPENSSL_USE_STATIC_LIBS TRUE)
+
+# Поиск OpenSSL
+find_package(OpenSSL REQUIRED)
+if(OPENSSL_FOUND)
+    message(STATUS "OpenSSL found: ${OPENSSL_INCLUDE_DIR}")
+    include_directories(${OPENSSL_INCLUDE_DIR})
+else()
+    message(FATAL_ERROR "OpenSSL not found")
+endif()
+
+# Загрузка jwt-cpp
+include(FetchContent)
+FetchContent_Declare(
+    jwt-cpp
+    GIT_REPOSITORY https://github.com/Thalhammer/jwt-cpp.git
+    GIT_TAG        v0.7.0
+)
+FetchContent_MakeAvailable(jwt-cpp)
+
+# Загрузка nlohmann_json
+include(FetchContent)
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG        v3.11.2
+)
+FetchContent_MakeAvailable(nlohmann_json)
+
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -30,6 +62,14 @@ add_executable(
   source/cIoC.cpp
   source/cUser.hpp
   source/cUser.cpp
+  source/cAuthServer.hpp
+  source/cAuthServer.cpp
+  source/cListOfUsers.hpp
+  source/cListOfUsers.cpp
+  source/cRequestAccessToPage.hpp
+  source/cRequestAccessToPage.cpp
+  source/cPageId.hpp
+  source/cPageId.cpp
 #add source file here
 
   source/tests/test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem.cpp
@@ -37,6 +77,10 @@ add_executable(
   source/tests/test_iCommand.cpp
   source/tests/test_cIoC.cpp
   source/tests/test_cUser.cpp
+  source/tests/test_cAuthServer.cpp
+  source/tests/test_cListOfUsers.cpp
+  source/tests/test_cRequestAccessToPage.cpp
+  source/tests/test_cPageId.cpp
 #add test file here
 )
 
@@ -49,6 +93,12 @@ target_link_libraries(
   ContentManagingSystem
   GTest::gtest_main
   GTest::gmock_main
+  jwt-cpp::jwt-cpp
+  nlohmann_json::nlohmann_json
+  #OpenSSL::SSL
+  #OpenSSL::Crypto
+  ${OPENSSL_SSL_LIBRARY}
+  ${OPENSSL_CRYPTO_LIBRARY}
 )
 
 include(GoogleTest GoogleMock)
