@@ -70,6 +70,8 @@ add_executable(
   source/cRequestAccessToPage.cpp
   source/cPageId.hpp
   source/cPageId.cpp
+  source/components/iComponent.hpp
+  source/components/iComponent.cpp
 #add source file here
 
   source/tests/test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem.cpp
@@ -81,12 +83,14 @@ add_executable(
   source/tests/test_cListOfUsers.cpp
   source/tests/test_cRequestAccessToPage.cpp
   source/tests/test_cPageId.cpp
+  source/components/tests/test_iComponent.cpp
 #add test file here
 )
 
 target_include_directories(
    ContentManagingSystem PRIVATE 
    source
+   source/components
 )
 
 target_link_libraries(
