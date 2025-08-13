@@ -1,1 +1,1 @@
-python makeOUTSClass.py iComponent
+python makeOUTSClass.py cTextComponent

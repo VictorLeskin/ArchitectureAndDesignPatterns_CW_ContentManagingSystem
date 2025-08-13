@@ -14,6 +14,10 @@ public:
   public:
     // add here members for free access.
     using iComponent::iComponent; // delegate constructors
+
+    void initialize(const nlohmann::json& params) override {}
+    std::string render() const override { return ""; }
+    std::string getType() const override { return ""; }
   };
 
 };

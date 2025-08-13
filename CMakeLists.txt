@@ -72,6 +72,8 @@ add_executable(
   source/cPageId.cpp
   source/components/iComponent.hpp
   source/components/iComponent.cpp
+  source/components/cTextComponent.hpp
+  source/components/cTextComponent.cpp
 #add source file here
 
   source/tests/test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem.cpp
@@ -84,6 +86,7 @@ add_executable(
   source/tests/test_cRequestAccessToPage.cpp
   source/tests/test_cPageId.cpp
   source/components/tests/test_iComponent.cpp
+  source/components/tests/test_cTextComponent.cpp
 #add test file here
 )
 
