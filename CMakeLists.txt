@@ -74,6 +74,10 @@ add_executable(
   source/components/iComponent.cpp
   source/components/cTextComponent.hpp
   source/components/cTextComponent.cpp
+  source/components/cHeaderComponent.hpp
+  source/components/cHeaderComponent.cpp
+  source/components/cImageComponent.hpp
+  source/components/cImageComponent.cpp
 #add source file here
 
   source/tests/test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem.cpp
@@ -87,6 +91,8 @@ add_executable(
   source/tests/test_cPageId.cpp
   source/components/tests/test_iComponent.cpp
   source/components/tests/test_cTextComponent.cpp
+  source/components/tests/test_cHeaderComponent.cpp
+  source/components/tests/test_cImageComponent.cpp
 #add test file here
 )
 
