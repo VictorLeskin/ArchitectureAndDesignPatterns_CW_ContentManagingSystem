@@ -1,1 +1,1 @@
-python makeOUTSClass.py  cIoC
+python makeOUTSClass.py cAuthServer

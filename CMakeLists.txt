@@ -28,12 +28,15 @@ add_executable(
   source/iCommand.cpp
   source/cIoC.hpp
   source/cIoC.cpp
+  source/cUser.hpp
+  source/cUser.cpp
 #add source file here
 
   source/tests/test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem.cpp
   source/tests/test_cException.cpp
   source/tests/test_iCommand.cpp
   source/tests/test_cIoC.cpp
+  source/tests/test_cUser.cpp
 #add test file here
 )
 
