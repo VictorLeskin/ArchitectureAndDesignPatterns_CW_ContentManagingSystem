@@ -31,6 +31,6 @@ TEST_F(test_cException, test_what)
 {
   const char* t0 = "Something wrong";
   Test_cException t(t0);
-  EXPECT_EQ(t0, t.what());
+  EXPECT_EQ(t0, t.What());
 }
 

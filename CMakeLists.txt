@@ -78,6 +78,8 @@ add_executable(
   source/components/cHeaderComponent.cpp
   source/components/cImageComponent.hpp
   source/components/cImageComponent.cpp
+  source/database/cJSONDataBase.hpp
+  source/database/cJSONDataBase.cpp
 #add source file here
 
   source/tests/test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem.cpp
@@ -93,6 +95,7 @@ add_executable(
   source/components/tests/test_cTextComponent.cpp
   source/components/tests/test_cHeaderComponent.cpp
   source/components/tests/test_cImageComponent.cpp
+  source/database/tests/test_cJSONDataBase.cpp
 #add test file here
 )
 
@@ -100,6 +103,7 @@ target_include_directories(
    ContentManagingSystem PRIVATE 
    source
    source/components
+   source/database
 )
 
 target_link_libraries(
