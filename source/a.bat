@@ -1,1 +1,1 @@
-python makeOUTSClass.py cPageId
+python makeOUTSClass.py cComponentRegistry

@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Подключаем необходимые зависимости
 # Указываем путь к OpenSSL
-set(OPENSSL_ROOT_DIR "D:/work/OpenSSL-Win64")
+set(OPENSSL_ROOT_DIR "C:/Program Files/OpenSSL-Win64")
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 
 # Поиск OpenSSL
@@ -80,6 +80,8 @@ add_executable(
   source/components/cImageComponent.cpp
   source/database/cJSONDataBase.hpp
   source/database/cJSONDataBase.cpp
+  source/cComponentRegistry.hpp
+  source/cComponentRegistry.cpp
 #add source file here
 
   source/tests/test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem.cpp
@@ -96,6 +98,7 @@ add_executable(
   source/components/tests/test_cHeaderComponent.cpp
   source/components/tests/test_cImageComponent.cpp
   source/database/tests/test_cJSONDataBase.cpp
+  source/tests/test_cComponentRegistry.cpp
 #add test file here
 )
 
