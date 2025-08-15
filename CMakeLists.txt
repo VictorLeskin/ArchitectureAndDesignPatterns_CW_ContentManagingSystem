@@ -82,6 +82,8 @@ add_executable(
   source/database/cJSONDataBase.cpp
   source/cComponentRegistry.hpp
   source/cComponentRegistry.cpp
+  source/cPageController.hpp
+  source/cPageController.cpp
 #add source file here
 
   source/tests/test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem.cpp
@@ -99,6 +101,7 @@ add_executable(
   source/components/tests/test_cImageComponent.cpp
   source/database/tests/test_cJSONDataBase.cpp
   source/tests/test_cComponentRegistry.cpp
+  source/tests/test_cPageController.cpp
 #add test file here
 )
 

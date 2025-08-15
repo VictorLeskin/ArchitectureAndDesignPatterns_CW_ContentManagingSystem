@@ -9,6 +9,10 @@ class cTextComponent : public iComponent
 public:
   void initialize(const nlohmann::json& params) override;
   std::string render() const override;
+  std::string render(const nlohmann::json& parameters) const override
+  {
+	  return render();
+  }
   std::string getType() const override { return "text"; }
 
   static nlohmann::json getParametersSchema();

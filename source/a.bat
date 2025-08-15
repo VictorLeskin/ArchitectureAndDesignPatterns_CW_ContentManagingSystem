@@ -1,1 +1,1 @@
-python makeOUTSClass.py cComponentRegistry
+python makeOUTSClass.py cPageController 

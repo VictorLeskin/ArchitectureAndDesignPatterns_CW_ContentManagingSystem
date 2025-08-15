@@ -17,6 +17,7 @@ public:
 
     void initialize(const nlohmann::json& params) override {}
     std::string render() const override { return ""; }
+    std::string render(const nlohmann::json& parameters) const { return ""; }
     std::string getType() const override { return ""; }
   };
 
