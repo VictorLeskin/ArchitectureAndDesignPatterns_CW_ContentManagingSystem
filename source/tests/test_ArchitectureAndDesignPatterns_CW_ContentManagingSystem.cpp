@@ -52,7 +52,7 @@ TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_ctor )
 
 extern const char* szExampleJsonBase;
 
-TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_simpleTestAndImage_A )
+TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_checkDBFromString)
 {
     {
         // open tmp file and write test JSON to it
@@ -63,17 +63,22 @@ TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_simpleT
 
     cms::cJSONDataBase db("database.tmp.json");
 
-    {
-        std::vector<cms::User> t1 = db.getUsers();
-        std::vector<cms::Page> p1 = db.getPages();
+    std::vector<cms::User> t1 = db.getUsers();
+    std::vector<cms::Page> p1 = db.getPages();
 
-        EXPECT_TRUE(0 != t1.size());
-        EXPECT_TRUE(0 != p1.size());
-    }
+    EXPECT_TRUE(0 != t1.size());
+    EXPECT_TRUE(0 != p1.size());
+}
+
+TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_simpleTestAndImage_A )
+{
+    std::ofstream strm("database.tmp.json");
+    strm << szExampleJsonBase << std::endl;
+    cms::cJSONDataBase db("database.tmp.json");
 
     std::vector<cms::Page> p1 = db.getPages();
 
-    cAuthServer authServer("", 1);
+    cAuthServer authServer("very_simple_key_work", 3600);
 
     cUser organizer("Organizer");
     cUser participant1("Participant #1");
@@ -107,6 +112,8 @@ TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_simpleT
     auto response = controller.renderPage(reqAccessToPageOrganizer);
 
     EXPECT_FALSE(response.access_denied);
+    EXPECT_TRUE( 0 != response.html.size() );
+
     if (response.access_denied)
     {
         std::cerr << "Access denied!" << std::endl;
@@ -220,8 +227,8 @@ const char* szExampleJsonBase
           "type": "text",
           "parameters": {
             "content": "Hello, world! Look at this",
-            "color": "#00ff00",
-            "font-size": "24",
+            "color": "#0000ff",
+            "fontSize": 24,
             "style": "color: blue; font-size: 24px;"
           }
         },

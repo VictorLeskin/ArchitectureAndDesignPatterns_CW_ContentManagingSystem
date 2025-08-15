@@ -1,0 +1,49 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password_hash": "$2a$10$N9qo8uLOickgx2ZMRZoMy.MrYV7Z1vL3H9CQ7sB6J3q7zQ9JQ1qW2",
+      "role": "admin",
+      "email": "admin@example.com"
+    }
+  ],
+  "pages": [
+    {
+      "id": "1",
+      "title": "Test Page",
+      "components": [
+        {
+          "type": "text",
+          "parameters": {
+            "content": "Hello, world! Look at this",
+            "color": "#0000ff",
+            "fontSize": 24,
+            "style": "color: blue; font-size: 24px;"
+          }
+        },
+        {
+          "type": "header",
+          "parameters": {
+            "text": "Header Level 1",
+            "level": 1,
+            "align": "left"
+          }
+        },
+
+        {
+          "type": "image",
+          "parameters": {
+            "src": "https://otus.ru/_next/static/images/img/logo2022_without_text-ad6a01e8608432b9967c441a0f4760b4.svg",
+            "alt": "Sample Image",
+            "width": 400,
+            "class": "responsive-img"
+          }
+        }
+      ],
+      "permissions": {
+        "read": ["admin", "editor"],
+        "write": ["admin"]
+      }
+    }
+  ]
+}
