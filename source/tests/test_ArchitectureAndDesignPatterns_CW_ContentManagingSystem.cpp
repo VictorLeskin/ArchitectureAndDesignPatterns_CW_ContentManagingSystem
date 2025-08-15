@@ -228,7 +228,7 @@ const char* szExampleJsonBase
         {
           "type": "image",
           "parameters": {
-            "src": "https://example.com/sample.jpg",
+            "src": "https://otus.ru/_next/static/images/img/logo2022_without_text-ad6a01e8608432b9967c441a0f4760b4.svg",
             "alt": "Sample Image",
             "width": 400,
             "class": "responsive-img"
