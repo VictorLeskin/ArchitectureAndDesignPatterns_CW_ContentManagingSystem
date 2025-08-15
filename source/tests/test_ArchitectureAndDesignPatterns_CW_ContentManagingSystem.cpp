@@ -28,7 +28,10 @@ public:
         using cFactory::factoryMethods;
 
         static Test_cFactory* Clone(const Test_cFactory&) { return nullptr; }
-        static cTextComponent* getTextComponent();
+        static cTextComponent* getTextComponent()
+        {
+            return new cTextComponent;
+        }
     };
 
   // additional class to access to member of tested class
@@ -54,7 +57,7 @@ TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_simpleT
 
     cIoC t0;
     cAuthServer auth("", 1);;
-    cComponentRegistry registry("", t0);
+    cComponentRegistry registry(scope, t0);
     cPageController controller(registry, auth);
 
     const cFactory& f11 = f1;
@@ -65,6 +68,7 @@ TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_simpleT
     // Генерация страницы
     auto response = controller.renderPage(sPageId, "admin_token");
 
+    EXPECT_FALSE(response.access_denied);
     if (response.access_denied) 
     {
         std::cerr << "Access denied!" << std::endl;

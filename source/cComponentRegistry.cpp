@@ -3,7 +3,7 @@
 #include "cComponentRegistry.hpp"
 #include "cIoC.hpp"
 
-inline std::unique_ptr<iComponent> cComponentRegistry::createComponent(const std::string& type)
+std::unique_ptr<iComponent> cComponentRegistry::createComponent(const std::string& type)
 {
     try {
         // –азрешаем зависимость через IoC контейнер
