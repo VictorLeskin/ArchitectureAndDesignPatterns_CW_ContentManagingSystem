@@ -1,20 +1,19 @@
 ///************************* OUTS HOMEWORK ****************************************
 
 #include "cAuthServer.hpp"
+#include "cRequestAccessToPage.hpp"
 
 #include <random>
 #include <algorithm>
 
-std::string cAuthServer::createPage(const cListOfUsers& participantsList)
+std::string cAuthServer::createPage(const std::string &pageId, const cListOfUsers& participantsList)
 {
-  std::vector<std::string> players;
-  return createPage(participantsList.Users());
+  return createPage(pageId, participantsList.Users());
 }
 
-std::string cAuthServer::createPage(const std::vector<std::string>& players) {
-  std::string id = generateSimpleId();
-  users[id] = players;
-  return id;
+std::string cAuthServer::createPage(const std::string& pageId, const std::vector<std::string>& players) {
+  users[pageId] = players;
+  return pageId;
 }
 
 bool cAuthServer::checkUser(const std::string& pageId, const std::string& userName)
@@ -23,6 +22,14 @@ bool cAuthServer::checkUser(const std::string& pageId, const std::string& userNa
     return false;
   const std::vector<std::string>& players = users[pageId];
   return std::find(  players.begin(), players.end(), userName) != players.end();
+}
+
+bool cAuthServer::getAccessToPage(cRequestAccessToPage& a)
+{
+  if (false == checkUser(a.pageId.id, a.user.Name()))
+    return false;
+  a.token = issueToken(a);
+  return true;
 }
 
 std::string cAuthServer::issueToken(const std::string& user_id, const std::string& page_id) {

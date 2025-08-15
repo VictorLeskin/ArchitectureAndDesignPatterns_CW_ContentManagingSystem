@@ -27,12 +27,14 @@ public:
   cAuthServer(const std::string& secret, int token_expiry)
     : secret_key(secret), token_expiry_seconds(token_expiry) {}
 
-  std::string createPage(const cListOfUsers& participantsList);
+  std::string createPage(const std::string& pageId, const cListOfUsers& participantsList);
   bool checkUser(const std::string& pageId, const std::string& userName);
 
+  bool getAccessToPage(cRequestAccessToPage& a);
+    
   std::string issueToken(const cRequestAccessToPage& req);
 
-  std::string createPage(const std::vector<std::string>& players);
+  std::string createPage(const std::string& pageId, const std::vector<std::string>& players);
   std::string issueToken(const std::string& user_id, const std::string& page_id);
   bool validateToken(const std::string& token, const std::string& page_id);
 

@@ -17,7 +17,6 @@ public:
 
   // Рендеринг компонента в HTML
   virtual std::string render() const = 0;
-  virtual std::string render(const nlohmann::json& parameters) const  = 0;
 
   // Получение типа компонента
   virtual std::string getType() const = 0;

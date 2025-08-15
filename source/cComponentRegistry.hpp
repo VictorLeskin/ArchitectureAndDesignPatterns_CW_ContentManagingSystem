@@ -13,7 +13,7 @@ class cIoC;
 class cComponentRegistry 
 {
 public:
-    explicit cComponentRegistry(const std::string &scope, cIoC& container) : scope_(scope_), container_(container) {}
+    explicit cComponentRegistry(const std::string &scope, cIoC& container) : scope_(scope), container_(container) {}
 
     std::unique_ptr<iComponent> createComponent(const std::string& type);
     

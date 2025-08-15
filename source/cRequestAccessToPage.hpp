@@ -15,6 +15,7 @@ public:
 public:
 	cUser user;
 	cPageId pageId;
+	std::string token;
 };
 
 #endif //#ifndef CREQUESTACCESSTOPAGE_HPP

@@ -25,7 +25,7 @@ TEST_F(test_cAuthServer, test_ctor )
 
   // 2. Создаем игру
   std::vector<std::string> users = { "user1", "user2" };
-  std::string page_id = auth.createPage(users);
+  std::string page_id = auth.createPage("page_1", users);
   EXPECT_EQ( page_id, "page_1" );
 
   // 3. Получаем токен для user1

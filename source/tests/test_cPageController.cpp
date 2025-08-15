@@ -21,9 +21,15 @@ public:
  
 TEST_F(test_cPageController, test_ctor )
 {
+  {
+      const char* szExampleJsonBase = R"({ "users": [], "pages": [] } )";
+      std::ofstream strm("database.tmp1.json");
+      strm << szExampleJsonBase << std::endl;
+  }
+  cms::cJSONDataBase db("database.tmp1.json");
   cIoC t0;
   cComponentRegistry registry("", t0);
   cAuthServer auth("",1);
-  Test_cPageController t(registry,auth);
+  Test_cPageController t(db,auth,registry);
 }
 

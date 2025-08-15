@@ -29,10 +29,10 @@ public:
         using cFactory::factoryMethods;
 
         static Test_cFactory* Clone(const Test_cFactory&) { return nullptr; }
-        static cTextComponent* getTextComponent()
-        {
-            return new cTextComponent;
-        }
+
+        static cHeaderComponent* getHeaderComponent() { return new cHeaderComponent; }
+        static cTextComponent* getTextComponent() { return new cTextComponent; }
+        static cImageComponent* getImageComponent() { return new cImageComponent; }
     };
 
   // additional class to access to member of tested class
@@ -47,6 +47,7 @@ public:
 TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_ctor )
 {
   Test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem t;
+  t;
 }
 
 extern const char* szExampleJsonBase;
@@ -70,6 +71,8 @@ TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_simpleT
         EXPECT_TRUE(0 != p1.size());
     }
 
+    std::vector<cms::Page> p1 = db.getPages();
+
     cAuthServer authServer("", 1);
 
     cUser organizer("Organizer");
@@ -78,28 +81,30 @@ TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_simpleT
 
     cListOfUsers participantsList = { organizer, participant1, participant2 };
 
-    cPageId pageId = authServer.createPage(participantsList);
+    cPageId pageId = authServer.createPage(p1[0].id, participantsList);
 
     cRequestAccessToPage reqAccessToPageOrganizer(organizer, pageId);
     cRequestAccessToPage reqAccessToPageParticipant1(participant1, pageId);
     cRequestAccessToPage reqAccessToPageParticipant2(participant2, pageId);
 
-    cms::Page page1;
-    page1.id = pageId.id;
-    db.addPage(page1);
+    EXPECT_TRUE(authServer.getAccessToPage(reqAccessToPageOrganizer) );
+    EXPECT_TRUE(authServer.getAccessToPage(reqAccessToPageParticipant1));
+    EXPECT_TRUE(authServer.getAccessToPage(reqAccessToPageParticipant2));
 
     const std::string scope("TestA");
     // Инициализация
     Test_cFactory f1;
     cIoC t0;
-    f1.Register(std::string("test"), Test_cFactory::getTextComponent);
+    f1.Register(std::string("header"), Test_cFactory::getHeaderComponent);
+    f1.Register(std::string("text"), Test_cFactory::getTextComponent);
+    f1.Register(std::string("image"), Test_cFactory::getImageComponent);
     t0.Resolve<iCommand>("Register", scope, (const cFactory&)f1)->Execute();
 
     cComponentRegistry registry(scope, t0);
-    cPageController controller(registry, authServer);
+    cPageController controller(db, authServer, registry);
 
     // Генерация страницы для пользователя organizer
-    auto response = controller.renderPage(pageId.id, organizer.Name() );
+    auto response = controller.renderPage(reqAccessToPageOrganizer);
 
     EXPECT_FALSE(response.access_denied);
     if (response.access_denied)
@@ -133,23 +138,35 @@ TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_simpleT
 
 TEST_F(test_ArchitectureAndDesignPatterns_CW_ContentManagingSystem, test_simpleTestAndImage)
 {
+    {
+        std::ofstream strm("database.tmp.json");
+        strm << szExampleJsonBase << std::endl;
+    }
+    cms::cJSONDataBase db("database.tmp.json");
+
     const std::string scope("TestA");
     // Инициализация
     Test_cFactory f1;
-    f1.Register(std::string("test"), Test_cFactory::getTextComponent);
+    f1.Register(std::string("header"), Test_cFactory::getHeaderComponent);
+    f1.Register(std::string("text"), Test_cFactory::getTextComponent);
+    f1.Register(std::string("image"), Test_cFactory::getImageComponent);
+    
 
     cIoC t0;
     cAuthServer auth("", 1);;
     cComponentRegistry registry(scope, t0);
-    cPageController controller(registry, auth);
+    cPageController controller(db, auth, registry);
 
     const cFactory& f11 = f1;
     t0.Resolve<iCommand>("Register", scope, f11)->Execute();
 
     std::string sPageId("page_01");
+    cUser user;
+    cPageId pageId;
+    cRequestAccessToPage req(user, pageId);
     
     // Генерация страницы
-    auto response = controller.renderPage(sPageId, "admin_token");
+    auto response = controller.renderPage(req);
 
     EXPECT_TRUE(response.access_denied);
     if (response.access_denied) 
@@ -203,6 +220,8 @@ const char* szExampleJsonBase
           "type": "text",
           "parameters": {
             "content": "Hello, world! Look at this",
+            "color": "#00ff00",
+            "font-size": "24",
             "style": "color: blue; font-size: 24px;"
           }
         },
