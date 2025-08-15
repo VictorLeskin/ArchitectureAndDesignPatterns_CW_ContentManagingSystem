@@ -19,13 +19,12 @@ namespace cms
   // Структуры данных
   struct User 
   {
-    int id;
     std::string username;
     std::string password_hash;
     std::string role;
     std::string email;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(User, id, username, password_hash, role, email)
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(User, username, password_hash, role, email)
   };
 
   struct Component 
@@ -38,7 +37,7 @@ namespace cms
 
   struct Page 
   {
-    int id;
+    std::string  id;
     std::string title;
     std::vector<Component> components;
 
@@ -58,20 +57,19 @@ namespace cms
 
     // User operations
     std::vector<User> getUsers();
-    std::optional<User> getUserById(int id);
-    std::optional<User> getUserByUsername(const std::string& username);
+    std::optional<User> getUserById(const std::string& username);
 
     bool addUser(const User& user);
     bool updateUser(const User& user);
-    bool deleteUser(int id);
+    bool deleteUser(const std::string& username);
 
     // Page operations
     std::vector<Page> getPages();
-    std::optional<Page> getPageById(int id);
+    std::optional<Page> getPageById(const std::string &id);
 
     bool addPage(const Page& page);
     bool updatePage(const Page& page);
-    bool deletePage(int id);
+    bool deletePage(const std::string &id);
 
     // Transaction support
     void beginTransaction();

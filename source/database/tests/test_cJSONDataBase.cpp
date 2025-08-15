@@ -36,14 +36,12 @@ protected:
     nlohmann::json initial_data = {
         {"users", {
             {
-                {"id", 1},
                 {"username", "admin"},
                 {"password_hash", "hash1"},
                 {"role", "admin"},
                 {"email", "admin@test.com"}
             },
             {
-                {"id", 2},
                 {"username", "editor"},
                 {"password_hash", "hash2"},
                 {"role", "editor"},
@@ -52,7 +50,7 @@ protected:
         }},
         {"pages", {
             {
-                {"id", 1},
+                {"id", "1"},
                 {"title", "Home Page"},
                 {"components", {
                     {
@@ -110,18 +108,12 @@ TEST_F(Test_cJSONDataBase, test_UserOperations) {
   ASSERT_EQ(users.size(), 2);
 
   // Проверка поиска пользователя по ID
-  auto user1 = db.getUserById(1);
+  auto user1 = db.getUserById("admin");
   ASSERT_TRUE(user1.has_value());
   EXPECT_EQ(user1->username, "admin");
 
-  // Проверка поиска пользователя по имени
-  auto user2 = db.getUserByUsername("editor");
-  ASSERT_TRUE(user2.has_value());
-  EXPECT_EQ(user2->id, 2);
-
   // Проверка добавления пользователя
   cms::User new_user{
-      3,
       "new_user",
       "hash3",
       "reader",
@@ -137,12 +129,12 @@ TEST_F(Test_cJSONDataBase, test_UserOperations) {
   // Проверка обновления пользователя
   new_user.email = "updated@test.com";
   EXPECT_TRUE(db.updateUser(new_user));
-  auto updated_user = db.getUserById(3);
+  auto updated_user = db.getUserById("new_user");
   ASSERT_TRUE(updated_user.has_value());
   EXPECT_EQ(updated_user->email, "updated@test.com");
 
   // Проверка удаления пользователя
-  EXPECT_TRUE(db.deleteUser(3));
+  EXPECT_TRUE(db.deleteUser("new_user"));
   EXPECT_EQ(db.getUsers().size(), 2);
 }
 
@@ -155,13 +147,13 @@ TEST_F(Test_cJSONDataBase, test_PageOperations) {
   ASSERT_EQ(pages.size(), 1);
 
   // Проверка поиска страницы по ID
-  auto page1 = db.getPageById(1);
+  auto page1 = db.getPageById("1");
   ASSERT_TRUE(page1.has_value());
   EXPECT_EQ(page1->title, "Home Page");
 
   // Проверка добавления страницы
   cms::Page new_page{
-      2,
+      "2",
       "New Page",
       {
           {
@@ -182,12 +174,12 @@ TEST_F(Test_cJSONDataBase, test_PageOperations) {
   // Проверка обновления страницы
   new_page.title = "Updated Page";
   EXPECT_TRUE(db.updatePage(new_page));
-  auto updated_page = db.getPageById(2);
+  auto updated_page = db.getPageById("2");
   ASSERT_TRUE(updated_page.has_value());
   EXPECT_EQ(updated_page->title, "Updated Page");
 
   // Проверка удаления страницы
-  EXPECT_TRUE(db.deletePage(2));
+  EXPECT_TRUE(db.deletePage("2"));
   EXPECT_EQ(db.getPages().size(), 1);
 }
 
@@ -200,7 +192,6 @@ TEST_F(Test_cJSONDataBase, test_Transactions) {
 
   // Добавляем пользователя в транзакции
   cms::User new_user{
-      3,
       "temp_user",
       "hash3",
       "reader",
@@ -252,8 +243,7 @@ TEST_F(Test_cJSONDataBase, test_ErrorHandling) {
   cms::cJSONDataBase db(test_db_path);
 
   cms::User duplicate_id_user{
-      1,  // Существующий ID
-      "new_user",
+      "admin",
       "hash",
       "role",
       "email@test.com"

@@ -28,10 +28,9 @@ public:
     : secret_key(secret), token_expiry_seconds(token_expiry) {}
 
   std::string createPage(const cListOfUsers& participantsList);
-  bool checkPlayer(const std::string& pageId, const std::string& playerName);
+  bool checkUser(const std::string& pageId, const std::string& userName);
 
   std::string issueToken(const cRequestAccessToPage& req);
-  
 
   std::string createPage(const std::vector<std::string>& players);
   std::string issueToken(const std::string& user_id, const std::string& page_id);

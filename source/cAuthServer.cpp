@@ -17,12 +17,12 @@ std::string cAuthServer::createPage(const std::vector<std::string>& players) {
   return id;
 }
 
-bool cAuthServer::checkPlayer(const std::string& pageId, const std::string& playerName)
+bool cAuthServer::checkUser(const std::string& pageId, const std::string& userName)
 {
   if (users.find(pageId) == users.end())
     return false;
   const std::vector<std::string>& players = users[pageId];
-  return std::find(  players.begin(), players.end(), playerName) != players.end();
+  return std::find(  players.begin(), players.end(), userName) != players.end();
 }
 
 std::string cAuthServer::issueToken(const std::string& user_id, const std::string& page_id) {

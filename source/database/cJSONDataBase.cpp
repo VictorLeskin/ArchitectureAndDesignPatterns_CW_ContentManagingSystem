@@ -71,25 +71,12 @@ namespace cms
     }
   }
 
-  std::optional<User> cJSONDataBase::getUserById(int id)
+  std::optional<User> cJSONDataBase::getUserById(const std::string& username)
   {
     auto users = getUsers();
     for (const auto& user : users) 
     {
-      if (user.id == id) 
-      {
-        return user;
-      }
-    }
-    return std::nullopt;
-  }
-
-  std::optional<User> cJSONDataBase::getUserByUsername(const std::string& username) 
-  {
-    auto users = getUsers();
-    for (const auto& user : users) 
-    {
-      if (user.username == username) 
+      if (user.username == username)
       {
         return user;
       }
@@ -107,7 +94,7 @@ namespace cms
       // Check if user already exists
       for (const auto& u : users) 
       {
-        if (u.id == user.id || u.username == user.username) 
+        if (u.username == user.username) 
         {
           return false;
         }
@@ -142,12 +129,12 @@ namespace cms
     }
   }
 
-  std::optional<Page> cJSONDataBase::getPageById(int id) 
+  std::optional<Page> cJSONDataBase::getPageById(const std::string& id)
   {
     auto pages = getPages();
     for (const auto& page : pages) 
     {
-      if (page.id == id) 
+      if (page.id == id)
       {
         return page;
       }
@@ -165,7 +152,7 @@ namespace cms
       // Check if page already exists
       for (const auto& p : pages) 
       {
-        if (p.id == page.id) 
+        if (p.id == page.id)
         {
           return false;
         }
@@ -230,7 +217,7 @@ namespace cms
 
       for (auto& u : users) 
       {
-        if (u.id == user.id) 
+        if (u.username == user.username)
         {
           u = user;
           found = true;
@@ -257,7 +244,7 @@ namespace cms
     }
   }
 
-  bool cJSONDataBase::deleteUser(int id) 
+  bool cJSONDataBase::deleteUser(const std::string& id)
   {
     std::lock_guard<std::mutex> lock(mutex_);
     try 
@@ -266,7 +253,7 @@ namespace cms
       bool found = false;
 
       users.erase(std::remove_if(users.begin(), users.end(),
-        [id](const User& u) { return u.id == id; }),
+        [id](const User& u) { return u.username == id; }),
         users.end());
 
       // ѕровер€ем, был ли удален пользователь
@@ -301,7 +288,7 @@ namespace cms
 
       for (auto& p : pages) 
       {
-        if (p.id == page.id) 
+        if (p.id == page.id)
         {
           p = page;
           found = true;
@@ -328,7 +315,7 @@ namespace cms
     }
   }
 
-  bool cJSONDataBase::deletePage(int id) 
+  bool cJSONDataBase::deletePage(const std::string& id)
   {
     std::lock_guard<std::mutex> lock(mutex_);
     try 
