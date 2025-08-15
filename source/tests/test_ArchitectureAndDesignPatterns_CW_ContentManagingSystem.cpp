@@ -226,6 +226,15 @@ const char* szExampleJsonBase
           }
         },
         {
+          "type": "header",
+          "parameters": {
+            "text": "Header Level 1",
+            "level": 1,
+            "align": "left"
+          }
+        },
+
+        {
           "type": "image",
           "parameters": {
             "src": "https://otus.ru/_next/static/images/img/logo2022_without_text-ad6a01e8608432b9967c441a0f4760b4.svg",
